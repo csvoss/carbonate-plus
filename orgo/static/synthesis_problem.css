@@ -1,0 +1,93 @@
+body, p {
+    font-family: Droid Serif, serif;
+}
+h1, h2, h3, svg {
+    font-family: Droid Sans, sans;
+}
+
+
+#leftbar {
+    width: 300px;
+}
+#rightbar {
+    padding-left: 10px;
+    margin-left: 10px;
+    border-left: thick double black;
+}
+
+.floaty {
+    float: left;
+}
+
+.reactionDroppableSquare {
+    width: 50px;
+    height: 50px;
+    background-color: black;
+    padding: 10px;
+    color: white;
+}
+
+small {
+    text: 20%;
+}
+
+.reactionDroppableLabel {
+    margin: 10px;
+}
+
+#target {
+    width: 10px;
+}
+
+#share {
+    color: blue;
+}
+
+#inProgressReaction {
+    border: 2px solid #eeeeee;
+    border-radius: 5px;
+    background-color: #dddddd;
+    margin: 10px;
+    padding: 10px;
+}
+
+#inProgressReaction:empty {
+    display: none;
+}
+
+#toolkit {
+    width: 300px;
+}
+
+.ui-autocomplete {
+    max-height: 100px;
+    overflow-y: auto;
+    /* prevent horizontal scrollbar */
+    overflow-x: hidden;
+}
+
+.clearer {
+    clear: both;
+}
+
+
+
+.molecule {
+    background-color: white;
+    margin: 10px;
+    padding: 5px;
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 10px;
+    border-color: white;
+    float: left;
+}
+.molecule:hover {
+    border-color: black;
+    cursor: pointer;
+}
+
+.molecule .selected {
+    border-color: cornsilk;
+    background-color: cornsilk;
+}

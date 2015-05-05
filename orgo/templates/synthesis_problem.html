@@ -1,0 +1,43 @@
+<html>
+<head>
+<script src="{{STATIC_URL}}/libraries/jquery-ui/external/jquery/jquery.js"></script>
+<script src="{{STATIC_URL}}/libraries/jquery-ui/jquery-ui.min.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}/libraries/jsPlumb.min.js"></script>
+<script src="{{STATIC_URL}}synthesis_problem.js"></script>
+<link rel="stylesheet" type="text/css" href="{{STATIC_URL}}synthesis_problem.css"></link>
+<link rel="stylesheet" href="{{STATIC_URL}}/libraries/jquery-ui/jquery-ui.min.css">
+<link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Droid+Serif:700,400italic,400,700italic' rel='stylesheet' type='text/css'>
+<title>Synthesis Practice</title>
+
+<script>
+$(document).ready(function() {
+    synthesisProblemMain({
+        startingMoleculeSvgs: {{starting_svgs|safe}},
+        startingMoleculeSmileses: {{starting_smileses|safe}},
+        targetMoleculeSvg: {{target_svg|safe}},
+        dropdownList: {{dropdown_list|safe}}
+    });
+});
+</script>
+</head>
+
+
+<body>
+<div id="leftbar" class="floaty">
+  <div id="buttons">
+    <p><a href="/{{next_random_seed}}/">New problem</a></p>
+    <p><span id="share" data-url="{{random_seed}}">Share this problem</span></p>
+  </div>
+  <h2>Reactions:</h2>
+  <input id="toolkit"></input>
+  <div id="inProgressReaction"></div>
+  <h2>Try to make:</h2>
+  <div id="target"></div>
+</div>
+<div id="rightbar" class="floaty">
+  <div id="workspace"></div>
+</div>
+</body>
+
+</html>
