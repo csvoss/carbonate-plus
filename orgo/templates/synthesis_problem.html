@@ -6,6 +6,7 @@
 <script src="{{STATIC_URL}}synthesis_problem.js"></script>
 <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}synthesis_problem.css"></link>
 <link rel="stylesheet" href="{{STATIC_URL}}/libraries/jquery-ui/jquery-ui.min.css">
+<link rel="stylesheet" href="{{STATIC_URL}}/libraries/jquery-ui/jquery-ui.theme.min.css">
 <link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
 <link href='http://fonts.googleapis.com/css?family=Droid+Serif:700,400italic,400,700italic' rel='stylesheet' type='text/css'>
 <title>Synthesis Practice</title>
@@ -22,16 +23,29 @@ $(document).ready(function() {
 });
 
 function share() {
-    alert("This URL will show the same problem next time: " + window.location.href);
+    fancyAlert("This URL will show the same problem next time: " + window.location.href, "Share");
 }
 
 function help() {
-    alert("You have, in your possession, each of the molecules on the right (in separate containers, one container per square). Your goal is to manufacture the Target Molecule, at left.\n\nTo accomplish this task, you can apply reactions to your molecules. Add a reaction by typing in the box at left to search for the reaction you wish to use, then selecting the molecules you wish to use as inputs.\n\nGood luck!");
+    fancyAlert("You have, in your possession, each of the molecules on the right (in separate containers, one container per square). Your goal is to manufacture the Target Molecule, at left.\n\nTo accomplish this task, you can apply reactions to your molecules. Add a reaction by typing in the box at left to search for the reaction you wish to use, then selecting the molecules you wish to use as inputs.\n\nGood luck!", "Help");
 }
 
 function about() {
-    alert("Carbonate Simplified, by Chelsea Voss with contributions from Felix Sun, Virup Gubba, Katie Sedlar, and Ray Hua Wu. Spring 2015. Contact csvoss@mit.edu to report issues.");
+    fancyAlert("Carbonate Simplified, by Chelsea Voss with contributions from Felix Sun, Virup Gubba, Katie Sedlar, and Ray Hua Wu. Spring 2015. Contact csvoss@mit.edu to report issues.", "About");
 }
+
+function fancyAlert(message, title)  {
+	$('#override_javascript_alert').text(message).dialog({
+		modal:true,
+		title:title,
+		buttons: {
+			'OK':function(){
+				$(this).dialog('close');
+			}
+		}
+	});
+};
+
 </script>
 </head>
 
@@ -48,7 +62,7 @@ function about() {
     </p>
   </div>
   <h2>Apply a Reaction</h2>
-  <input id="toolkit" style="width:100%;" placeholder="Type a reaction name..."></input>
+  <input id="toolkit" placeholder="Type a reaction name..."></input>
   <div id="inProgressReaction"></div>
   <h2>Target Molecule</h2>
   <div id="target"></div>
@@ -58,5 +72,8 @@ function about() {
   <div id="workspace"></div>
 </div>
 </body>
+
+<div id="override_javascript_alert"></div>
+
 
 </html>

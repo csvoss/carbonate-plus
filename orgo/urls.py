@@ -57,6 +57,11 @@ def run_reaction(request):
     input_smileses = request.GET.getlist('input_smileses[]', [])
     reaction_name = request.GET.get('reaction', MIX)
 
+    if len(input_smileses) <= 1 and reaction_name == MIX:
+        return HttpResponse(json.dumps({
+            "reactionHappened": False,
+        }))
+
     input_molecule = moleculify(input_smileses)
     reaction_function = NAMES_TO_REACTIONS[reaction_name]
 
@@ -66,15 +71,23 @@ def run_reaction(request):
         output_smiles = [smilesify(m, canonical=True) for m in output_molecule]
         output_smiles = list(set(output_smiles))
 
+    print repr(output_molecule)
+
+    if output_molecule == None or output_molecule == [] or output_molecule == '':
+        return HttpResponse(json.dumps({
+            "reactionHappened": False,
+        }))
+
     if type(output_smiles) is list:
         output_smiles = '.'.join(output_smiles)
 
 
     return HttpResponse(json.dumps({
+        "reactionHappened": True,
         "smiles": output_smiles,
         "svg": smilesToSvg(output_smiles),
         "isAnswer": check_solution(answer, output_smiles)
-    })) ## TODO
+    }))
 
 ## API
 ## Inputs:  - Signed? SMILES representation of the answer
@@ -128,42 +141,42 @@ dropdown_list = [
     dropdown_item("Hydrobromination", "HBr in CH<sub>2</sub>Cl<sub>2</sub>", hydrobrominate_it),
     dropdown_item("Hydrochlorination", "HCl in CH<sub>2</sub>Cl<sub>2</sub>", hydrochlorinate_it),
     dropdown_item(MIX, "(no reagents)", mix_it),
-    # dropdown_item("1-equiv Hydrobromination", "", hydrobrominate_it_once),
-    # dropdown_item("1-equiv Hydroiodination", "", hydroiodinate_it_once),
-    # dropdown_item("1-equiv Hydrochlorination", "", hydrochlorinate_it_once),
-    # dropdown_item("Hydroiodination", "", hydroiodinate_it),
-    # dropdown_item("1-equiv Bromination", "", brominate_it_once),
-    # dropdown_item("1-equiv Iodination", "", iodinate_it_once),
-    # dropdown_item("1-equiv Chlorination", "", chlorinate_it_once),
-    # dropdown_item("Bromination", "", brominate_it),
-    # dropdown_item("Iodination", "", iodinate_it),
-    # dropdown_item("Chlorination", "", chlorinate_it),
-    # dropdown_item("Epoxidation", "", epoxidate_it),
-    # dropdown_item("Acid Hydration (Water)", "H<sub>2</sub>SO<sub>4</sub>, H<sub>2</sub>O", acidhydrate_it),
-    # dropdown_item("Acid Hydration (Water) (HgSO<sub>4</sub> accels.)", "H<sub>2</sub>SO<sub>4</sub>, H<sub>2</sub>O, HgSO<sub>4</sub> accels.", acidhydrate_it_hgso4),
-    # dropdown_item("Acid Hydration (Ethanol)", "H<sub>2</sub>SO<sub>4</sub>, EtOH", acidhydrate_it_ethanol),
-    # dropdown_item("Acid Hydration (Ethanol) (HgSO<sub>4</sub> accels.)", "H<sub>2</sub>SO<sub>4</sub>, EtOH, HgSO<sub>4</sub> accels.", acidhydrate_it_hgso4_ethanol),
+    dropdown_item("1-equiv Hydrobromination", "HBr (1 equiv) in CH<sub>2</sub>Cl<sub>2</sub>", hydrobrominate_it_once),
+    dropdown_item("1-equiv Hydroiodination", "HI (1 equiv) in CH<sub>2</sub>Cl<sub>2</sub>", hydroiodinate_it_once),
+    dropdown_item("1-equiv Hydrochlorination", "HCl (1 equiv) in CH<sub>2</sub>Cl<sub>2</sub>", hydrochlorinate_it_once),
+    dropdown_item("Hydroiodination", "HI in CH<sub>2</sub>Cl<sub>2</sub>", hydroiodinate_it),
+    dropdown_item("1-equiv Bromination", "Br<sub>2</sub> (1 equiv) in CH<sub>2</sub>Cl<sub>2</sub>", brominate_it_once),
+    dropdown_item("1-equiv Iodination", "I<sub>2</sub> (1 equiv) in CH<sub>2</sub>Cl<sub>2</sub>", iodinate_it_once),
+    dropdown_item("1-equiv Chlorination", "Cl<sub>2</sub> (1 equiv) in CH<sub>2</sub>Cl<sub>2</sub>", chlorinate_it_once),
+    dropdown_item("Bromination", "Br<sub>2</sub> in CH<sub>2</sub>Cl<sub>2</sub>", brominate_it),
+    dropdown_item("Iodination", "I<sub>2</sub> in CH<sub>2</sub>Cl<sub>2</sub>", iodinate_it),
+    dropdown_item("Chlorination", "Cl<sub>2</sub> in CH<sub>2</sub>Cl<sub>2</sub>", chlorinate_it),
+    dropdown_item("Epoxidation", "mCPBA or PhCO<sub>3</sub>H in CH<sub>2</sub>Cl<sub>2</sub>", epoxidate_it),
+    dropdown_item("Acid Hydration (Water)", "H<sub>2</sub>SO<sub>4</sub>, H<sub>2</sub>O", acidhydrate_it),
+    dropdown_item("Acid Hydration (Water) (HgSO<sub>4</sub> accels.)", "H<sub>2</sub>SO<sub>4</sub>, H<sub>2</sub>O, HgSO<sub>4</sub> accels.", acidhydrate_it_hgso4),
+    dropdown_item("Acid Hydration (Ethanol)", "H<sub>2</sub>SO<sub>4</sub>, EtOH", acidhydrate_it_ethanol),
+    dropdown_item("Acid Hydration (Ethanol) (HgSO<sub>4</sub> accels.)", "H<sub>2</sub>SO<sub>4</sub>, EtOH, HgSO<sub>4</sub> accels.", acidhydrate_it_hgso4_ethanol),
     # dropdown_item("", "", acidhydrate_it_auto),
     # dropdown_item("", "", acidhydrate_it_hgso4_auto),
-    # dropdown_item("", "", bromohydrate_it_water),
-    # dropdown_item("", "", bromohydrate_it_ethanol),
-    # dropdown_item("", "", bromohydrate_it_auto),
-    # dropdown_item("", "", iodohydrate_it_water),
-    # dropdown_item("", "", iodohydrate_it_ethanol),
-    # dropdown_item("", "", iodohydrate_it_auto),
-    # dropdown_item("", "", chlorohydrate_it_water),
-    # dropdown_item("", "", chlorohydrate_it_ethanol),
-    # dropdown_item("", "", chlorohydrate_it_auto),
-    # dropdown_item("", "", hydroborate_oxidate_it),
-    # dropdown_item("", "", hydroborate_oxidate_it_1),
-    # dropdown_item("", "", hydroborate_oxidate_it_2),
-    # dropdown_item("", "", dihydroxylate_it),
-    # dropdown_item("", "", ozonolyse_it),
-    # dropdown_item("", "", sodium_ammonia_it),
-    # dropdown_item("", "", lindlar_it),
-    # dropdown_item("", "", alkyne_deprotonate_it),
-    # dropdown_item("", "", tert_butoxide_it),
-    # dropdown_item("", "", acetylide_add_it),
+    dropdown_item("", "", bromohydrate_it_water),
+    dropdown_item("", "", bromohydrate_it_ethanol),
+    dropdown_item("", "", bromohydrate_it_auto),
+    dropdown_item("", "", iodohydrate_it_water),
+    dropdown_item("", "", iodohydrate_it_ethanol),
+    dropdown_item("", "", iodohydrate_it_auto),
+    dropdown_item("", "", chlorohydrate_it_water),
+    dropdown_item("", "", chlorohydrate_it_ethanol),
+    dropdown_item("", "", chlorohydrate_it_auto),
+    dropdown_item("", "", hydroborate_oxidate_it),
+    dropdown_item("", "", hydroborate_oxidate_it_1),
+    dropdown_item("", "", hydroborate_oxidate_it_2),
+    dropdown_item("", "", dihydroxylate_it),
+    dropdown_item("", "", ozonolyse_it),
+    dropdown_item("", "", sodium_ammonia_it),
+    dropdown_item("", "", lindlar_it),
+    dropdown_item("", "", alkyne_deprotonate_it),
+    dropdown_item("", "", tert_butoxide_it),
+    dropdown_item("", "", acetylide_add_it),
 ]
 
 dropdown_list = sorted(dropdown_list)

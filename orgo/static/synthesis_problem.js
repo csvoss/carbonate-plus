@@ -71,13 +71,17 @@ function synthesisProblemMain(parameters) {
                             data = JSON.parse(data);
                             $("#inProgressReaction").html(""); //Note: old text is b(ui.item.desc)
                             $(".molecule").each(function(index) { unselectMolecule($(this)); });
-                            var svg = data.svg;
-                            var smiles = data.smiles;
-                            addMolecule(svg, smiles);
+                            if (!data.reactionHappened) {
+                                $("#inProgressReaction").html("<h31>No reaction!</h3>");
+                            } else {
+                                var svg = data.svg;
+                                var smiles = data.smiles;
+                                addMolecule(svg, smiles);
 
-                            // Check for victory
-                            if (data.isAnswer) {
-                                alert("Victory!");
+                                // Check for victory
+                                if (data.isAnswer) {
+                                    alert("Victory!");
+                                }
                             }
                         }
                         
