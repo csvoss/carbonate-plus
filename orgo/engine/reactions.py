@@ -7,6 +7,8 @@ MAXLEN = 8
 class ReactionTooCrazyError(Exception):
     pass
 
+debug = True
+
 def removeDuplicates(moleculeList):
     if not isinstance(moleculeList, list):
         return [moleculeList]
@@ -73,7 +75,8 @@ def react(molecules, findPlace, reactAtPlace):
     while True:
         if len(molecules) > MAXLEN:
             #If the reaction gets too crazy, kill.
-            raise ReactionTooCrazyError
+            # raise ReactionTooCrazyError
+            return removeDuplicates(removeDuplicates(molecules))
         places = [(molecule, findPlace(molecule)) for molecule in molecules]
         if not (False in [item[1]==None for item in places]):
             break
@@ -685,6 +688,7 @@ def acidhydrate(molecules, others, alkynesOk = False):
             return findAlkenesAndAlkynes(molecule)
         else:
             return findAlkenes(molecule)
+
     def findPlaces2(molecule):
         return findHydroxyls(molecule)
 

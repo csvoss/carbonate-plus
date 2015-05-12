@@ -166,3 +166,6 @@ lindlar_it = rxns.lindlar
 alkyne_deprotonate_it = rxns.alkyneDeprotonate
 tert_butoxide_it = rxns.tertButoxide
 acetylide_add_it = lambda x: rxns.acetylideAdd(x, x)
+
+hydrogenate_it = lambda x: rxns.hydrogenate(x)
+radical_hydrobrominate_it = lambda x: rxns.radicalhydrohalogenate(x, "Br")

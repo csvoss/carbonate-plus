@@ -56,37 +56,41 @@ function synthesisProblemMain(parameters) {
             $("#inProgressReaction").click(function() {
                 var input_smileses = $.map($('.selectedMolecule').toArray(),
                                            function(element, index) { return $(element).attr('data-smiles'); });
-                $.ajax(
-                    '/run_reaction/',
-                    {
-                        'data': {
-                            'input_smileses': input_smileses,
-                            'answer': $('#target').attr('data-smiles'),
-                            'reaction': reaction,
-                        },
-                        'error': function(jqXHR, textStatus, errorThrown) {
-                            alert("An error occurred: "+errorThrown + textStatus);
-                        },
-                        'success': function(data, textStatus, jqXHR) {
-                            data = JSON.parse(data);
-                            $("#inProgressReaction").html(""); //Note: old text is b(ui.item.desc)
-                            $(".molecule").each(function(index) { unselectMolecule($(this)); });
-                            if (!data.reactionHappened) {
-                                $("#inProgressReaction").html("<h31>No reaction!</h3>");
-                            } else {
-                                var svg = data.svg;
-                                var smiles = data.smiles;
-                                addMolecule(svg, smiles);
-
-                                // Check for victory
-                                if (data.isAnswer) {
-                                    alert("Victory!");
+                if (input_smileses.length == 0) {
+                    fancyAlert("You forgot to select a molecule.", "Try again");
+                }
+                else {
+                    $.ajax(
+                        '/run_reaction/',
+                        {
+                            'data': {
+                                'input_smileses': input_smileses,
+                                'answer': $('#target').attr('data-smiles'),
+                                'reaction': reaction,
+                            },
+                            'error': function(jqXHR, textStatus, errorThrown) {
+                                alert("An error occurred: "+errorThrown);
+                            },
+                            'success': function(data, textStatus, jqXHR) {
+                                data = JSON.parse(data);
+                                $("#inProgressReaction").html(""); //Note: old text is b(ui.item.desc)
+                                $(".molecule").each(function(index) { unselectMolecule($(this)); });
+                                if (!data.reactionHappened) {
+                                    $("#inProgressReaction").html("<h31>No reaction!</h3>");
+                                } else {
+                                    var svg = data.svg;
+                                    var smiles = data.smiles;
+                                    addMolecule(svg, smiles);
+                                    
+                                    // Check for victory
+                                    if (data.isAnswer) {
+                                        fancyAlert("That solves it!", "Success!");
+                                    }
                                 }
                             }
                         }
-                        
-                    }
-                ); 
+                    );
+                }
             });
             reactants = [];
             return false;
