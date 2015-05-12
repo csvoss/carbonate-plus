@@ -1,9 +1,6 @@
 function synthesisProblemMain(parameters) {
-    $("span#share").click(function() {
-        alert("This URL will show the same problem next time: /" + $("span#share").attr("data-url") + "/");
-    });
-
     $("#target").html(parameters.targetMoleculeSvg);
+    $("#target").attr("data-smiles", parameters.targetMoleculeSmiles);
 
     var reactants;
 
@@ -31,20 +28,6 @@ function synthesisProblemMain(parameters) {
     // });
 
     // OBSOLETE CODE, here for your reference only
-    // $.ajax(
-    //     '/render_molecule/',
-    //     {
-    //         'data': {
-    //             'molecule': '',
-    //         },
-    //         'error': function(jqXHR, textStatus, errorThrown) {
-    //             alert("An error occurred: "+errorThrown);
-    //         },
-    //         'success': function(data, textStatus, jqXHR) {
-    //         }
-         
-    //     }
-    // );
 
 
 
@@ -67,8 +50,40 @@ function synthesisProblemMain(parameters) {
             $( "#toolkit" ).val( ui.item.label );
             $("#inProgressReaction").html(b(ui.item.desc)
                                           + clearer()
-                                          + "Next, select two molecules to react. <button>Go</button>");
-            
+                                          + "<small>Click on input molecules to select them. Then, click here to apply the reaction.</small>");
+            var reaction = ui.item.label;
+            $("#inProgressReaction").unbind("click");
+            $("#inProgressReaction").click(function() {
+                var input_smileses = $.map($('.selectedMolecule').toArray(),
+                                           function(element, index) { return $(element).attr('data-smiles'); });
+                $.ajax(
+                    '/run_reaction/',
+                    {
+                        'data': {
+                            'input_smileses': input_smileses,
+                            'answer': $('#target').attr('data-smiles'),
+                            'reaction': reaction,
+                        },
+                        'error': function(jqXHR, textStatus, errorThrown) {
+                            alert("An error occurred: "+errorThrown + textStatus);
+                        },
+                        'success': function(data, textStatus, jqXHR) {
+                            data = JSON.parse(data);
+                            $("#inProgressReaction").html(""); //Note: old text is b(ui.item.desc)
+                            $(".molecule").each(function(index) { unselectMolecule($(this)); });
+                            var svg = data.svg;
+                            var smiles = data.smiles;
+                            addMolecule(svg, smiles);
+
+                            // Check for victory
+                            if (data.isAnswer) {
+                                alert("Victory!");
+                            }
+                        }
+                        
+                    }
+                ); 
+            });
             reactants = [];
             return false;
         }
@@ -97,22 +112,31 @@ function b(thing) {
     return "<b>" + thing + "</b>";
 }
 
-
 function addMolecule(svg, smiles) {
     $("#workspace").append(molecule(svg, smiles));
+    $(".molecule").unbind("click");
     $(".molecule").click(function() {
         isToggled = $(this).attr("data-toggled");
         if (isToggled === "false") {
-            alert("Was not toggled!");
-            $(this).attr("data-toggled", "true");
+            selectMolecule($(this));
         } else {
-            alert("Was toggled!");
-            $(this).attr("data-toggled", "false");
+            unselectMolecule($(this));
         }            
     });
 }
 
-
 function molecule(svg, smiles) {
     return "<div class=\"molecule\" data-smiles=\""+smiles+"\" data-toggled=\"false\">"+svg+"</div>";
+}
+
+function unselectMolecule($this) {
+    $this.attr("data-toggled", "false");
+    $this.removeClass("selectedMolecule");
+    $this.css("background-color", "");
+}
+
+function selectMolecule($this) {
+    $this.attr("data-toggled", "true");
+    $this.addClass("selectedMolecule");
+    $this.css("background-color", "cornsilk");
 }

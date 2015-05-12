@@ -5,14 +5,31 @@ h1, h2, h3, svg {
     font-family: Droid Sans, sans;
 }
 
+body {
+    background-image: url("http://31.media.tumblr.com/05551e707b4b2145352febbdc7dee99f/tumblr_inline_mr6k63GXwD1qz4rgp.jpg");
+}
 
 #leftbar {
-    width: 300px;
+    width: 250px;
+    height: 100%;
+    border: 1px solid black;
+    background-image: url("http://www.altavetta.com/sites/default/files/Medicinal%20Chemistry%20Image.jpg");
+    background-size: 300px;
+    background-position: left bottom;
+    background-repeat: no-repeat;
+    background-attachment: local;
+    background-color: white;
+    padding: 20px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    -webkit-box-shadow: 10px 0 10px 0px #888;
+            box-shadow: 10px 0 10px 0px #888;
 }
+
 #rightbar {
-    padding-left: 10px;
-    margin-left: 10px;
-    border-left: thick double black;
+    width: 750px;
+    padding: 20px;
+    padding-top: 0px;
 }
 
 .floaty {
@@ -36,7 +53,11 @@ small {
 }
 
 #target {
-    width: 10px;
+    background-color: #DDD;
+    border-radius: 20px;
+    border: 1px solid black;
+    margin: 0 auto;
+    width: 200px;
 }
 
 #share {
@@ -44,11 +65,15 @@ small {
 }
 
 #inProgressReaction {
-    border: 2px solid #eeeeee;
+    border: 1px solid black;
     border-radius: 5px;
-    background-color: #dddddd;
+    background-color: #DDD;
     margin: 10px;
     padding: 10px;
+}
+
+#inProgressReaction:hover {
+    cursor: pointer;
 }
 
 #inProgressReaction:empty {
@@ -73,21 +98,19 @@ small {
 
 
 .molecule {
-    background-color: white;
     margin: 10px;
+    margin-top: 0px;
     padding: 5px;
-    border-width: 2px;
-    border-style: solid;
-    border-radius: 10px;
-    border-color: white;
     float: left;
+    border-radius: 20px;
 }
 .molecule:hover {
-    border-color: black;
+    background-color: white;
     cursor: pointer;
 }
 
-.molecule .selected {
-    border-color: cornsilk;
+.selectedMolecule {
     background-color: cornsilk;
 }
+
+

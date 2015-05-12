@@ -2,6 +2,10 @@ import hashlib
 import json
 
 from engine.renderSVG import render as smilesToSvg
+from engine.reaction_functions import *
+from engine.toMolecule import moleculify
+from engine.toSmiles import smilesify
+from engine.toCanonical import to_canonical
 
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
@@ -16,15 +20,12 @@ urlpatterns = patterns('',
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^run_reaction/', 'orgo.urls.run_reaction', name='run_reaction'),
-    url(r'^check_solution/', 'orgo.urls.check_solution', name='check_solution'),
+#    url(r'^check_solution/', 'orgo.urls.check_solution', name='check_solution'),
     url(r'^render_molecule/', 'orgo.urls.render_molecule', name='render_molecule'),
     url(r'^(?P<random_seed>.[a-f0-9]*)/$', 'orgo.urls.synthesis_problem', name='synthesis_problem')
 )
 
 urlpatterns += staticfiles_urlpatterns()
-
-
-
 
 
 
@@ -52,14 +53,38 @@ def synthesis_problem(request, random_seed):
 ##          - Signed? SMILES representations of each input molecule
 ## Outputs: - Signed? SMILES representation of the result
 def run_reaction(request):
-    return ""
+    answer = request.GET.get('answer', None)
+    input_smileses = request.GET.getlist('input_smileses[]', [])
+    reaction_name = request.GET.get('reaction', MIX)
+
+    input_molecule = moleculify(input_smileses)
+    reaction_function = NAMES_TO_REACTIONS[reaction_name]
+
+    output_molecule = reaction_function(input_molecule)
+
+    if type(output_molecule) is list:
+        output_smiles = [smilesify(m, canonical=True) for m in output_molecule]
+        output_smiles = list(set(output_smiles))
+
+    if type(output_smiles) is list:
+        output_smiles = '.'.join(output_smiles)
+
+
+    return HttpResponse(json.dumps({
+        "smiles": output_smiles,
+        "svg": smilesToSvg(output_smiles),
+        "isAnswer": check_solution(answer, output_smiles)
+    })) ## TODO
 
 ## API
 ## Inputs:  - Signed? SMILES representation of the answer
 ##          - Signed? SMILES representation of an intermediate
 ## Outputs: - True/False if right/not right yet
-def check_solution(request):
-    return ""
+def check_solution(answer, newest):
+    if answer is None or newest is None:
+        return False
+    else:
+        return to_canonical(answer) == to_canonical(newest)
 
 ## API
 ## Inputs:  - SMILES representation of a molecule
@@ -84,19 +109,61 @@ class SynthesisProblem(object):
 
     def __init__(self, random_seed):
         ##  major TODO here
-        self.starting_smiles = ['CC=C', 'CCBr', 'C1CC(-Cl)CC1']
-        self.target_smiles = 'C1CCC1CCCC3CC3Br'
+        self.starting_smiles = ['CCCCC#CCCCC']
+        self.target_smiles = 'CCCCC(=O)CCCCC'
 
+NAMES_TO_REACTIONS = {}
 
-def dropdown_item(label, desc, numInputs):
+def dropdown_item(label, desc, function):
+    NAMES_TO_REACTIONS[label] = function
     return {
         "label": label,
         "desc": desc,
-        "numInputs": numInputs
     }
 
 
+MIX = "Mix together"
+
 dropdown_list = [
-    dropdown_item("Hydrobromination", "HBr in CH<sub>2</sub>Cl<sub>2</sub>", 1),
-    dropdown_item("Hydrochlorination", "HCl in CH<sub>2</sub>Cl<sub>2</sub>", 1),
+    dropdown_item("Hydrobromination", "HBr in CH<sub>2</sub>Cl<sub>2</sub>", hydrobrominate_it),
+    dropdown_item("Hydrochlorination", "HCl in CH<sub>2</sub>Cl<sub>2</sub>", hydrochlorinate_it),
+    dropdown_item(MIX, "(no reagents)", mix_it),
+    # dropdown_item("1-equiv Hydrobromination", "", hydrobrominate_it_once),
+    # dropdown_item("1-equiv Hydroiodination", "", hydroiodinate_it_once),
+    # dropdown_item("1-equiv Hydrochlorination", "", hydrochlorinate_it_once),
+    # dropdown_item("Hydroiodination", "", hydroiodinate_it),
+    # dropdown_item("1-equiv Bromination", "", brominate_it_once),
+    # dropdown_item("1-equiv Iodination", "", iodinate_it_once),
+    # dropdown_item("1-equiv Chlorination", "", chlorinate_it_once),
+    # dropdown_item("Bromination", "", brominate_it),
+    # dropdown_item("Iodination", "", iodinate_it),
+    # dropdown_item("Chlorination", "", chlorinate_it),
+    # dropdown_item("Epoxidation", "", epoxidate_it),
+    # dropdown_item("Acid Hydration (Water)", "H<sub>2</sub>SO<sub>4</sub>, H<sub>2</sub>O", acidhydrate_it),
+    # dropdown_item("Acid Hydration (Water) (HgSO<sub>4</sub> accels.)", "H<sub>2</sub>SO<sub>4</sub>, H<sub>2</sub>O, HgSO<sub>4</sub> accels.", acidhydrate_it_hgso4),
+    # dropdown_item("Acid Hydration (Ethanol)", "H<sub>2</sub>SO<sub>4</sub>, EtOH", acidhydrate_it_ethanol),
+    # dropdown_item("Acid Hydration (Ethanol) (HgSO<sub>4</sub> accels.)", "H<sub>2</sub>SO<sub>4</sub>, EtOH, HgSO<sub>4</sub> accels.", acidhydrate_it_hgso4_ethanol),
+    # dropdown_item("", "", acidhydrate_it_auto),
+    # dropdown_item("", "", acidhydrate_it_hgso4_auto),
+    # dropdown_item("", "", bromohydrate_it_water),
+    # dropdown_item("", "", bromohydrate_it_ethanol),
+    # dropdown_item("", "", bromohydrate_it_auto),
+    # dropdown_item("", "", iodohydrate_it_water),
+    # dropdown_item("", "", iodohydrate_it_ethanol),
+    # dropdown_item("", "", iodohydrate_it_auto),
+    # dropdown_item("", "", chlorohydrate_it_water),
+    # dropdown_item("", "", chlorohydrate_it_ethanol),
+    # dropdown_item("", "", chlorohydrate_it_auto),
+    # dropdown_item("", "", hydroborate_oxidate_it),
+    # dropdown_item("", "", hydroborate_oxidate_it_1),
+    # dropdown_item("", "", hydroborate_oxidate_it_2),
+    # dropdown_item("", "", dihydroxylate_it),
+    # dropdown_item("", "", ozonolyse_it),
+    # dropdown_item("", "", sodium_ammonia_it),
+    # dropdown_item("", "", lindlar_it),
+    # dropdown_item("", "", alkyne_deprotonate_it),
+    # dropdown_item("", "", tert_butoxide_it),
+    # dropdown_item("", "", acetylide_add_it),
 ]
+
+dropdown_list = sorted(dropdown_list)

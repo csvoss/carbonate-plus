@@ -22,11 +22,14 @@ def render(smiles, hydrogens=False):
     """
     print "Rendering...",smiles
     obConversion = openbabel.OBConversion()
+    # obConversion.AddOption("U", obConversion.OUTOPTIONS, "1") 
     obConversion.SetInAndOutFormats("smi", "svg")
     outMol = openbabel.OBMol()
     if VERBOSE:
         print "SVGing: %s" % str(smiles)
     obConversion.ReadString(outMol, str(smiles))
+
+
     ans = obConversion.WriteString(outMol)
     
     ## Make the svg background transparent:
