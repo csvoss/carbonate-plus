@@ -23,7 +23,7 @@ def to_canonical(smiles):
     obConversion.SetInAndOutFormats("smi", "can")
     outMol = openbabel.OBMol()
     if VERBOSE:
-        print "Canonizing: %s" % str(smiles)
+        print "Canonicalizing: %s" % str(smiles)
     obConversion.ReadString(outMol, str(smiles))
     ans = obConversion.WriteString(outMol)
     return ans.strip()
