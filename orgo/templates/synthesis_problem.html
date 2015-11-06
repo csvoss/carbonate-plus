@@ -7,8 +7,26 @@
 <link rel="stylesheet" type="text/css" href="{{STATIC_URL}}synthesis_problem.css"></link>
 <link rel="stylesheet" href="{{STATIC_URL}}/libraries/jquery-ui/jquery-ui.min.css">
 <link rel="stylesheet" href="{{STATIC_URL}}/libraries/jquery-ui/jquery-ui.theme.min.css">
-<link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
-<link href='http://fonts.googleapis.com/css?family=Droid+Serif:700,400italic,400,700italic' rel='stylesheet' type='text/css'>
+<!--<link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
+<link
+href='http://fonts.googleapis.com/css?family=Droid+Serif:700,400italic,400,700italic'
+rel='stylesheet' type='text/css'>-->
+
+<!-- Bootstrap -->
+<link rel="stylesheet"
+href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"
+integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ=="
+crossorigin="anonymous">
+<link rel="stylesheet"
+href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css"
+integrity="sha384-aUGj/X2zp5rLCbBxumKTCw2Z50WgIr1vs/PFN4praOTvYXWlVyh2UtNUU0KAUhAX"
+crossorigin="anonymous">
+<script
+src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"
+integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ=="
+crossorigin="anonymous"></script>
+
+
 <title>Synthesis Practice</title>
 
 <script>
@@ -27,11 +45,11 @@ function share() {
 }
 
 function help() {
-    fancyAlert("You have, in your possession, each of the molecules on the right (in separate containers, one container per square). Your goal is to manufacture the Target Molecule, at left.\n\nTo accomplish this task, you can apply reactions to your molecules. Add a reaction by typing in the box at left to search for the reaction you wish to use, then selecting the molecules you wish to use as inputs.\n\nGood luck!", "Help");
+    fancyAlert("You have, in your possession, each of the molecules on the right (in separate containers, one container per square).\n\nYour goal is to manufacture the Target Molecule, at left.\n\nTo accomplish this task, you can apply reactions to your molecules. Add a reaction by typing in the box at left to search for the reaction you wish to use, then selecting the molecules you wish to use as inputs.\n\nGood luck!", "Help");
 }
 
 function about() {
-    fancyAlert("Carbonate Simplified, by Chelsea Voss with contributions from Felix Sun, Virup Gubba, Katie Sedlar, and Ray Hua Wu. Spring 2015. Contact csvoss@mit.edu to report issues.", "About");
+    fancyAlert("Carbonate Simplified, by Chelsea Voss with contributions from Felix Sun, Virup Gubba, Katie Sedlar, and Ray Hua Wu. Spring 2015. Contact carbonate@mit.edu to report issues.", "About");
 }
 
 function fancyAlert(message, title)  {
@@ -47,11 +65,13 @@ function fancyAlert(message, title)  {
 };
 
 </script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 
-<body>
-<div id="leftbar" class="floaty">
+<body class="row">
+<div id="leftbar" class="col-lg-2 col-md-4 col-sm-5 col-xs-12">
   <h1>Laboratory</h1>
   <div id="buttons">
     <p>
@@ -67,7 +87,7 @@ function fancyAlert(message, title)  {
   <h2>Target Molecule</h2>
   <div id="target"></div>
 </div>
-<div id="rightbar" class="floaty">
+<div id="rightbar" class="col-lg-10 col-md-8 col-sm-7 col-xs-12">
   <h1>Workspace</h1>
   <div id="workspace"></div>
 </div>
