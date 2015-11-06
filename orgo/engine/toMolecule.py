@@ -52,8 +52,11 @@ def moleculify(smiles):
         return [m for i in smiles for m in moleculify(i)]
     else:
         try:
+            assert len(smiles) != 0
             smiles = to_canonical(smiles)
+            assert len(smiles) != 0
             smiles = preprocess(smiles)
+            assert len(smiles) != 0
             lexed = LEXER.lex(smiles)
             return PARSER.parse(lexed)
         except ParsingError as e:
