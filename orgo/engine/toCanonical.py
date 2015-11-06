@@ -27,5 +27,7 @@ def to_canonical(smiles):
     obConversion.ReadString(outMol, str(smiles))
     ans = obConversion.WriteString(outMol)
     if len(ans.strip()) == 0:
+        # TODO: Something is grievously wrong
+        return smiles
         raise StandardError("%s %s" % (smiles, ans.strip()))
     return ans.strip()
