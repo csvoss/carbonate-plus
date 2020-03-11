@@ -1,4 +1,4 @@
-rply==0.7.3
+rply==0.7.4
 Django==1.8
 django-toolbelt==0.0.1
 static3==0.5.1
